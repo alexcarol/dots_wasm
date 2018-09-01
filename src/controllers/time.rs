@@ -4,7 +4,7 @@ use rand::Rng;
 use super::Actions;
 use game_state::GameState;
 use geometry::{Advance, Position, Point};
-use models::{Bullet, Enemy, Particle, Vector};
+use models::{Enemy, Particle, Vector};
 use util;
 
 // Constants related to time
@@ -54,52 +54,11 @@ impl<T: Rng> TimeController<T> {
     pub fn update_seconds(&mut self, dt: f64, actions: &Actions, state: &mut GameState) {
         self.current_time += dt;
 
-        // Update rocket rotation
-        if actions.rotate_left {
-            *state.world.player.direction_mut() += -ROTATE_SPEED * dt;
-        }
-        if actions.rotate_right {
-            *state.world.player.direction_mut() += ROTATE_SPEED * dt;
-        };
-
-        // Set speed and advance the player with wrap around
-        let speed = if actions.boost { 2.0 * ADVANCE_SPEED } else { ADVANCE_SPEED };
-        state.world.player.advance_wrapping(dt * speed, state.world.size);
-
-        // Update particles
-        for particle in &mut state.world.particles {
-            particle.update(dt);
-        }
-
         // Remove old particles
         util::fast_retain(&mut state.world.particles, |p| p.ttl > 0.0);
 
-        // Add new particles at the player's position, to leave a trail
-        if self.current_time - self.last_tail_particle > TRAIL_PARTICLE_RATE {
-            self.last_tail_particle = self.current_time;
-            state.world.particles.push(Particle::new(state.world.player.vector.clone().invert(),
-                                                    0.5));
-        }
 
-        // Add bullets
-        if actions.shoot && self.current_time - self.last_shoot > BULLET_RATE {
-            self.last_shoot = self.current_time;
-            state.world.bullets.push(Bullet::new(Vector::new(state.world.player.front(),
-                                                            state.world.player.direction())));
-        }
-
-        // Advance bullets
-        for bullet in &mut state.world.bullets {
-            bullet.update(dt * BULLET_SPEED);
-        }
-
-        // Remove bullets outside the viewport
-        {
-            // Shorten the lifetime of size
-            let size = &state.world.size;
-            util::fast_retain(&mut state.world.bullets, |b| size.contains(b.position()));
-        }
-
+       /* might be useful to detect where the mouse is
         // Spawn enemies at random locations
         if self.current_time - self.last_spawned_enemy > ENEMY_SPAWN_RATE {
             self.last_spawned_enemy = self.current_time;
@@ -108,12 +67,7 @@ impl<T: Rng> TimeController<T> {
             let mut enemy_pos;
             // We loop here, just in case the new enemy random position is exactly equal
             // to the players current position, this would break our calculations below
-            loop {
-                enemy_pos = Vector::random(&mut self.rng, state.world.size);
-                if enemy_pos.position != player_pos.position {
-                    break;
-                }
-            }
+
             // Check if the newly spawned enemy is inside the player's grace area,
             // if so, we push its spawn point to the edge of the area
             if enemy_pos.position.intersect_circle(&player_pos.position, PLAYER_GRACE_AREA) {
@@ -121,14 +75,6 @@ impl<T: Rng> TimeController<T> {
                 let dp: Point = enemy_pos.position - player_pos.position;
                 enemy_pos.position = player_pos.position + dp / length * PLAYER_GRACE_AREA;
             }
-
-            let new_enemy = Enemy::new(enemy_pos);
-            state.world.enemies.push(new_enemy);
-        }
-
-        // Move enemies in the player's direction
-        for enemy in &mut state.world.enemies {
-            enemy.update(dt * ENEMY_SPEED, state.world.player.position());
-        }
+        }*/
     }
 }

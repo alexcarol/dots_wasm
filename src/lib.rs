@@ -41,9 +41,7 @@ fn new_game_data(width: f64, height: f64) -> GameData {
 // These functions are provided by the runtime
 extern "C" {
     fn clear_screen();
-    fn draw_player(_: c_double, _: c_double, _: c_double);
     fn draw_enemy(_: c_double, _: c_double);
-    fn draw_bullet(_: c_double, _: c_double);
     fn draw_particle(_: c_double, _: c_double, _: c_double);
     fn draw_score(_: c_double);
 }
@@ -55,7 +53,7 @@ pub extern "C" fn resize(width: c_double, height: c_double) {
 
 #[no_mangle]
 pub unsafe extern "C" fn draw() {
-    use geometry::{Advance, Position};
+    use geometry::{ Position};
     let data = &mut DATA.lock().unwrap();
     let world = &data.state.world;
 
@@ -64,15 +62,10 @@ pub unsafe extern "C" fn draw() {
         draw_particle(particle.x(), particle.y(), 5.0 * particle.ttl);
     }
 
-    for bullet in &world.bullets {
-        draw_bullet(bullet.x(), bullet.y());
-    }
-
     for enemy in &world.enemies {
         draw_enemy(enemy.x(), enemy.y());
     }
 
-    draw_player(world.player.x(), world.player.y(), world.player.direction());
     draw_score(data.state.score as f64);
 }
 
@@ -109,4 +102,22 @@ pub extern "C" fn toggle_turn_left(b: c_int) {
 pub extern "C" fn toggle_turn_right(b: c_int) {
     let data = &mut DATA.lock().unwrap();
     data.actions.rotate_right = int_to_bool(b);
+}
+
+#[no_mangle]
+pub extern "C" fn handle_mousedown(x: c_int, y: c_int) {
+    let data = &mut DATA.lock().unwrap();
+    data.actions.click = (x as i32, y as i32);
+}
+
+#[no_mangle]
+pub extern "C" fn handle_mousemove(x: c_int, y: c_int) {
+    let data = &mut DATA.lock().unwrap();
+    data.actions.mouse_position = (x as i32, y as i32);
+}
+
+#[no_mangle]
+pub extern "C" fn handle_mouseup(x: c_int, y: c_int) {
+    let ata = &mut DATA.lock().unwrap();
+    data.actions.mouseup = true
 }

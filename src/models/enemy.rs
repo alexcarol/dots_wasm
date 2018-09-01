@@ -14,13 +14,6 @@ impl Enemy {
     pub fn new(vector: Vector) -> Enemy {
         Enemy { vector: vector }
     }
-
-    /// Update the enemy
-    pub fn update(&mut self, speed: f64, player_position: Point) {
-        // Point to the player
-        self.point_to(player_position);
-        self.advance(speed);
-    }
 }
 
 impl Collide for Enemy {

@@ -26,15 +26,11 @@ impl GameState {
     pub fn reset(&mut self) {
         let mut rng = Pcg32Basic::from_seed([42, 42]);
 
-        // Reset player position
-        *self.world.player.x_mut() = self.world.size.random_x(&mut rng);
-        *self.world.player.y_mut() = self.world.size.random_y(&mut rng);
-
         // Reset score
         self.score = 0;
 
         // Remove all enemies and bullets
-        self.world.bullets.clear();
         self.world.enemies.clear();
+        self.world.enemies = World::enemies();
     }
 }

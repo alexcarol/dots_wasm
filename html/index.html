@@ -57,16 +57,6 @@
     eCtx.fill();
 
     // Player
-    res.player.width = 20;
-    res.player.height = 16;
-    let plCtx = res.player.getContext('2d');
-    plCtx.fillStyle = "red";
-    plCtx.beginPath();
-    plCtx.lineTo(20, 8);
-    plCtx.lineTo(0, 16);
-    plCtx.lineTo(0, 0);
-    plCtx.fill();
-
     return res;
   }
 
@@ -135,8 +125,28 @@
     module.toggle_boost = mod.exports.toggle_boost;
     module.toggle_turn_left = mod.exports.toggle_turn_left;
     module.toggle_turn_right = mod.exports.toggle_turn_right;
+    module.handle_mousedown =  mod.exports.handle_mousedown;
+    module.handle_mouseup =  mod.exports.handle_mouseup;
+    module.handle_mousemove =  mod.exports.handle_mousemove;
     module.resize = mod.exports.resize;
     module.draw = mod.exports.draw;
+
+    canvas.addEventListener('mousedown', (e) => {
+      console.log("pos", e);
+      module.handle_mousedown(e.x, e.y);
+    });
+
+    canvas.addEventListener('mousemove', (e) =>  {
+      console.log('mousemove', e);
+      module.handle_mousemove(e.x, e.y);
+    });
+
+    canvas.addEventListener('mouseup', (e) =>  {
+      console.log('mouseup', e);
+      module.handle_mouseup(e.x, e.y);
+    });
+
+
 
     // Input processing
     function processKey(key, b) {
