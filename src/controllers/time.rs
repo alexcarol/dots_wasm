@@ -58,18 +58,29 @@ impl<T: Rng> TimeController<T> {
         util::fast_retain(&mut state.world.particles, |p| p.ttl > 0.0);
 
         if actions.click != (0, 0) {
+         /*   unsafe {
+                log(1);
+            }*/
             state.current_line_active = true;
             state.current_line.a.x = actions.click.0;
             state.current_line.a.y = actions.click.1;
         }
 
         if state.current_line_active && actions.mouse_position != (0, 0) {
+            /*unsafe {
+                log(2);
+            }*/
             state.current_line.b.x = actions.mouse_position.0;
             state.current_line.b.y = actions.mouse_position.1;
         }
 
         if actions.mouseup {
+            /*unsafe {
+                log(3);
+            }*/
             state.current_line_active = false;
+
+            state.lines.push(state.current_line);
             // TODO save line
         }
 

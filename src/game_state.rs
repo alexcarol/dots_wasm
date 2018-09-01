@@ -4,10 +4,13 @@ use rand::SeedableRng;
 use geometry::{Position, Size};
 use models::World;
 
+#[derive(Copy, Clone)]
 pub struct PixelPoint {
     pub x: i32,
     pub y: i32,
 }
+
+#[derive(Copy, Clone)]
 pub struct Line {
     pub a: PixelPoint,
     pub b: PixelPoint,
@@ -19,6 +22,8 @@ pub struct GameState {
     pub world: World,
     /// The current score of the player
     pub score: u32,
+
+    pub lines: Vec<Line>,
 
     pub current_line_active: bool,
     pub current_line: Line,
@@ -36,6 +41,7 @@ impl GameState {
                 a: PixelPoint { x: 0, y: 0},
                 b: PixelPoint { x:  0, y: 0},
             },
+            lines: vec![],
         }
     }
 

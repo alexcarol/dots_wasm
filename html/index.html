@@ -107,6 +107,9 @@
       ctx.lineTo(bx, by);
       ctx.stroke();
     }
+    function rust_log(x) {
+      console.log("rust-log", x);
+    }
 
     function draw_score(x) {
       ctx.fillStyle = "orange";
@@ -116,7 +119,7 @@
     }
 
     // The real loading and running of our wasm starts here
-    let imports = { clear_screen, draw_player, draw_enemy, draw_bullet, draw_particle, draw_score, draw_line };
+    let imports = { clear_screen, draw_player, draw_enemy, draw_bullet, draw_particle, draw_score, draw_line, rust_log };
     imports.Math_atan = Math.atan;
     imports.sin = Math.sin;
     imports.cos = Math.cos;
@@ -142,16 +145,27 @@
     module.resize = mod.exports.resize;
     module.draw = mod.exports.draw;
 
-    canvas.addEventListener('mousedown', (e) => {
-      module.handle_mousedown(e.x, e.y);
+    canvas.addEventListener('mousedown', (event) => {
+      var rect = canvas.getBoundingClientRect();
+      var x = event.pageX - rect.left;
+      var y = event.pageY - rect.top;
+      console.log('mousedown', event);
+      module.handle_mousedown(x, y);
     });
 
-    canvas.addEventListener('mousemove', (e) =>  {
-      module.handle_mousemove(e.x, e.y);
+    canvas.addEventListener('mousemove', (event) =>  {
+      var rect = canvas.getBoundingClientRect();
+      var x = event.pageX- rect.left;
+      var y = event.pageY - rect.top;
+
+      module.handle_mousemove(x, y);
     });
 
-    canvas.addEventListener('mouseup', (e) =>  {
-      module.handle_mouseup(e.x, e.y);
+    canvas.addEventListener('mouseup', (event) => {
+      var rect = canvas.getBoundingClientRect();
+      var x = event.pageX - rect.left;
+      var y = event.pageY - rect.top;
+      module.handle_mouseup(x, y);
     });
 
 

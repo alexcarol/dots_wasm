@@ -45,6 +45,7 @@ extern "C" {
     fn draw_particle(_: c_double, _: c_double, _: c_double);
     fn draw_score(_: c_double);
     fn draw_line(_: c_int, _: c_int, _: c_int, _: c_int);
+    fn rust_log(_: c_int);
 }
 
 #[no_mangle]
@@ -74,12 +75,29 @@ pub unsafe extern "C" fn draw() {
         let b = &data.state.current_line.b;
         draw_line(a.x, a.y, b.x, b.y);
     }
+
+    for line in &data.state.lines {
+        draw_line(line.a.x, line.a.y, line.b.x, line.b.y);
+    }
+/*
+    if data.actions.click != (0, 0) {
+        rust_log(1);
+    }
+    if data.state.current_line_active && data.actions.mouse_position != (0, 0) {
+        rust_log(2);
+    }
+    if data.actions.mouseup {
+        rust_log(3);
+    }*/
 }
 
 #[no_mangle]
 pub extern "C" fn update(time: c_double) {
     let data: &mut GameData = &mut DATA.lock().unwrap();
     data.time_controller.update_seconds(time, &data.actions, &mut data.state);
+    data.actions.mouseup = false;
+    data.actions.click = (0, 0);
+
     CollisionsController::handle_collisions(&mut data.state);
 }
 
