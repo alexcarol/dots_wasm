@@ -26,7 +26,8 @@
       player: document.createElement('canvas'),
       enemy: document.createElement('canvas'),
       bullet: document.createElement('canvas'),
-      particle: document.createElement('canvas')
+      particle: document.createElement('canvas'),
+      line: document.createElement('canvas')
     }
 
     // Particle
@@ -97,6 +98,16 @@
       ctx.drawImage(res.particle, x - radius, y - radius, 2 * radius, 2 * radius);
     }
 
+    function draw_line(ax, ay, bx, by) {
+      console.log('draw_line called:', ax, ay, bx, by);
+      ctx.beginPath();
+      ctx.moveTo(ax, ay);
+      ctx.strokeStyle = 'orange';
+      ctx.lineWidth = 15;
+      ctx.lineTo(bx, by);
+      ctx.stroke();
+    }
+
     function draw_score(x) {
       ctx.fillStyle = "orange";
       ctx.textBaseline = "top";
@@ -105,7 +116,7 @@
     }
 
     // The real loading and running of our wasm starts here
-    let imports = { clear_screen, draw_player, draw_enemy, draw_bullet, draw_particle, draw_score };
+    let imports = { clear_screen, draw_player, draw_enemy, draw_bullet, draw_particle, draw_score, draw_line };
     imports.Math_atan = Math.atan;
     imports.sin = Math.sin;
     imports.cos = Math.cos;
@@ -132,17 +143,14 @@
     module.draw = mod.exports.draw;
 
     canvas.addEventListener('mousedown', (e) => {
-      console.log("pos", e);
       module.handle_mousedown(e.x, e.y);
     });
 
     canvas.addEventListener('mousemove', (e) =>  {
-      console.log('mousemove', e);
       module.handle_mousemove(e.x, e.y);
     });
 
     canvas.addEventListener('mouseup', (e) =>  {
-      console.log('mouseup', e);
       module.handle_mouseup(e.x, e.y);
     });
 

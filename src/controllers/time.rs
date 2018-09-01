@@ -57,6 +57,21 @@ impl<T: Rng> TimeController<T> {
         // Remove old particles
         util::fast_retain(&mut state.world.particles, |p| p.ttl > 0.0);
 
+        if actions.click != (0, 0) {
+            state.current_line_active = true;
+            state.current_line.a.x = actions.click.0;
+            state.current_line.a.y = actions.click.1;
+        }
+
+        if state.current_line_active && actions.mouse_position != (0, 0) {
+            state.current_line.b.x = actions.mouse_position.0;
+            state.current_line.b.y = actions.mouse_position.1;
+        }
+
+        if actions.mouseup {
+            state.current_line_active = false;
+            // TODO save line
+        }
 
        /* might be useful to detect where the mouse is
         // Spawn enemies at random locations

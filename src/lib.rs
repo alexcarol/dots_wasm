@@ -44,6 +44,7 @@ extern "C" {
     fn draw_enemy(_: c_double, _: c_double);
     fn draw_particle(_: c_double, _: c_double, _: c_double);
     fn draw_score(_: c_double);
+    fn draw_line(_: c_int, _: c_int, _: c_int, _: c_int);
 }
 
 #[no_mangle]
@@ -67,6 +68,12 @@ pub unsafe extern "C" fn draw() {
     }
 
     draw_score(data.state.score as f64);
+
+    if data.state.current_line_active {
+        let a = &data.state.current_line.a;
+        let b = &data.state.current_line.b;
+        draw_line(a.x, a.y, b.x, b.y);
+    }
 }
 
 #[no_mangle]
@@ -118,6 +125,6 @@ pub extern "C" fn handle_mousemove(x: c_int, y: c_int) {
 
 #[no_mangle]
 pub extern "C" fn handle_mouseup(x: c_int, y: c_int) {
-    let ata = &mut DATA.lock().unwrap();
+    let data = &mut DATA.lock().unwrap();
     data.actions.mouseup = true
 }
