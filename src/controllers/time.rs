@@ -3,7 +3,7 @@ use rand::Rng;
 
 use super::Actions;
 use game_state::GameState;
-use geometry::{Advance, Position, Point};
+use geometry::{Position, Collide};
 use models::{Enemy, Particle, Vector, Mouse};
 use util;
 
@@ -60,11 +60,13 @@ impl<T: Rng> TimeController<T> {
         if actions.click != (0, 0) {
             let mouse = Mouse::new(actions.click.0, actions.click.1);
 
-            for enemy in state.world.enemies {
-                if enemy.collides_with(mouse) {
+            for enemy in &state.world.enemies {
+                if enemy.collides_with(&mouse) {
                     state.current_line_active = true;
-                    state.current_line.a.x = actions.click.0;
-                    state.current_line.a.y = actions.click.1;
+                    state.current_line.a.x = enemy.position().x as i32;
+                    state.current_line.a.y = enemy.position().y as i32;
+
+                    break;
                 }
             }
 
@@ -78,7 +80,17 @@ impl<T: Rng> TimeController<T> {
         if actions.mouseup {
             state.current_line_active = false;
 
-            state.lines.push(state.current_line);
+            let mouse = Mouse::new(state.current_line.b.x, state.current_line.b.y);
+
+            for enemy in &state.world.enemies {
+                if enemy.collides_with(&mouse) {
+                    state.current_line.b.x = enemy.position().x as i32;
+                    state.current_line.b.y =  enemy.position().y as i32;
+                    state.lines.push(state.current_line);
+
+                    break;
+                }
+            }
         }
 
 
