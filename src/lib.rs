@@ -1,40 +1,34 @@
 extern crate itertools_num;
 #[macro_use]
 extern crate lazy_static;
-extern crate rand;
-extern crate pcg_rand;
 
 mod controllers;
 mod game_state;
 mod geometry;
 mod models;
-mod util;
 
 use std::os::raw::{c_double, c_int};
 use std::sync::Mutex;
 
-use pcg_rand::Pcg32Basic;
-use rand::SeedableRng;
-
 use self::game_state::GameState;
 use self::geometry::Size;
-use self::controllers::{Actions, TimeController, CollisionsController};
+use self::controllers::{Actions, TimeController};
 
 lazy_static! {
-    static ref DATA: Mutex<GameData> = Mutex::new(new_game_data(1024.0, 600.0));
+    static ref DATA: Mutex<GameData<'a>> = Mutex::new(new_game_data(1024.0, 600.0));
 }
 
-struct GameData {
-    state: GameState,
+struct GameData<'a> {
+    state: GameState<'a>,
     actions: Actions,
-    time_controller: TimeController<Pcg32Basic>
+    time_controller: TimeController,
 }
 
-fn new_game_data(width: f64, height: f64) -> GameData {
-    GameData {
+fn new_game_data<'a>(width: f64, height: f64) -> &'static GameData<'a> {
+    &GameData {
         state: GameState::new(Size::new(width, height)),
         actions: Actions::default(),
-        time_controller: TimeController::new(Pcg32Basic::from_seed([42, 42]))
+        time_controller: TimeController::new(),
     }
 }
 
@@ -97,8 +91,6 @@ pub extern "C" fn update(time: c_double) {
     data.time_controller.update_seconds(time, &data.actions, &mut data.state);
     data.actions.mouseup = false;
     data.actions.click = (0, 0);
-
-    CollisionsController::handle_collisions(&mut data.state);
 }
 
 fn int_to_bool(i: c_int) -> bool {

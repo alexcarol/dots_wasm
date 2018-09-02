@@ -1,8 +1,6 @@
-use pcg_rand::Pcg32Basic;
-use rand::SeedableRng;
-
-use geometry::{Position, Size};
+use geometry::{Size};
 use models::World;
+use models::Dot;
 
 #[derive(Copy, Clone)]
 pub struct PixelPoint {
@@ -11,35 +9,34 @@ pub struct PixelPoint {
 }
 
 #[derive(Copy, Clone)]
-pub struct Line {
-    pub a: PixelPoint,
-    pub b: PixelPoint,
+pub struct Line<'a> {
+    pub a: &'a Dot,
+    pub b: &'a Dot,
 }
 
 /// The data structure that contains the state of the game
-pub struct GameState {
+pub struct GameState<'a> {
     /// The world contains everything that needs to be drawn
     pub world: World,
     /// The current score of the player
     pub score: u32,
 
-    pub lines: Vec<Line>,
+    pub lines: Vec<Line<'a>>,
 
     pub current_line_active: bool,
-    pub current_line: Line,
+    pub current_line: Line<'a>,
 }
 
-impl GameState {
+impl<'a> GameState<'a> {
     /// Returns a new `GameState` containing a `World` of the given `Size`
-    pub fn new(size: Size) -> GameState {
-        let mut rng = Pcg32Basic::from_seed([42, 42]);
+    pub fn new(size: Size) -> GameState<'a> {
         GameState {
-            world: World::new(&mut rng, size),
+            world: World::new(size),
             score: 0,
             current_line_active: false,
             current_line: Line {
-                a: PixelPoint { x: 0, y: 0},
-                b: PixelPoint { x:  0, y: 0},
+                a: &Dot::new(0, 0),
+                b: &Dot::new(0, 0),
             },
             lines: vec![],
         }
@@ -47,17 +44,14 @@ impl GameState {
 
     /// Reset our game-state
     pub fn reset(&mut self) {
-        let mut rng = Pcg32Basic::from_seed([42, 42]);
-
         // Reset score
         self.score = 0;
 
         // Remove all enemies and bullets
-        self.world.enemies.clear();
-        self.world.enemies = World::enemies();
-        self.current_line =   Line {
-            a: PixelPoint { x: 0, y: 0},
-            b: PixelPoint { x:  0, y: 0},
+        self.world.dots = World::dots();
+        self.current_line = Line {
+            a: &Dot::new(0, 0),
+            b: &Dot::new(0, 0),
         };
         self.current_line_active = false;
     }

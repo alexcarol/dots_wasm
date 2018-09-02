@@ -1,50 +1,19 @@
 use std::f64;
-use rand::Rng;
 
 use super::Actions;
 use game_state::GameState;
-use geometry::{Position, Collide};
-use models::{Enemy, Particle, Vector, Mouse};
-use util;
-
-// Constants related to time
-const BULLETS_PER_SECOND: f64 = 100.0;
-const BULLET_RATE: f64 = 1.0 / BULLETS_PER_SECOND;
-
-const ENEMY_SPAWNS_PER_SECOND: f64 = 1.0;
-const ENEMY_SPAWN_RATE: f64 = 1.0 / ENEMY_SPAWNS_PER_SECOND;
-
-const TRAIL_PARTICLES_PER_SECOND: f64 = 20.0;
-const TRAIL_PARTICLE_RATE: f64 = 1.0 / TRAIL_PARTICLES_PER_SECOND;
-
-// Constants related to movement
-// Speed is measured in pixels per second
-// Rotation speed is measured in radians per second
-const ADVANCE_SPEED: f64 = 200.0;
-const BULLET_SPEED: f64 = 500.0;
-const ENEMY_SPEED: f64 = 100.0;
-const ROTATE_SPEED: f64 = 2.0 * f64::consts::PI;
-
-const PLAYER_GRACE_AREA: f64 = 200.0;
+use geometry::{Collide};
+use models::{Mouse};
 
 /// Timers to handle creation of bullets, enemies and particles
-pub struct TimeController<T: Rng> {
-    /// A random number generator
-    rng: T,
+pub struct TimeController {
     current_time: f64,
-    last_tail_particle: f64,
-    last_shoot: f64,
-    last_spawned_enemy: f64
 }
 
-impl<T: Rng> TimeController<T> {
-    pub fn new(rng: T) -> TimeController<T> {
+impl TimeController {
+    pub fn new() -> TimeController {
         TimeController {
-            rng,
             current_time: 0.0,
-            last_tail_particle: 0.0,
-            last_shoot: 0.0,
-            last_spawned_enemy: 0.0
         }
     }
 
@@ -54,19 +23,17 @@ impl<T: Rng> TimeController<T> {
     pub fn update_seconds(&mut self, dt: f64, actions: &Actions, state: &mut GameState) {
         self.current_time += dt;
 
-        // Remove old particles
-        util::fast_retain(&mut state.world.particles, |p| p.ttl > 0.0);
-
         if actions.click != (0, 0) {
             let mouse = Mouse::new(actions.click.0, actions.click.1);
 
-            for enemy in &state.world.enemies {
-                if enemy.collides_with(&mouse) {
-                    state.current_line_active = true;
-                    state.current_line.a.x = enemy.position().x as i32;
-                    state.current_line.a.y = enemy.position().y as i32;
+            for row in &state.world.dots {
+                for dot in row {
+                    if dot.collides_with(mouse) {
+                        state.current_line_active = true;
+                        state.current_line.a = dot;
 
-                    break;
+                        break;
+                    }
                 }
             }
 

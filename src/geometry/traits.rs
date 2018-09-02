@@ -2,7 +2,7 @@
 
 use std::f64;
 
-use super::{Point, Size};
+use super::Point;
 
 /// A trait for objects that occupy a position in space
 pub trait Position {
@@ -21,52 +21,6 @@ pub trait Position {
     /// Returns the position of the object
     fn position(&self) -> Point {
         Point::new(self.x(), self.y())
-    }
-}
-
-/// A trait for objects that have can move in a given direction
-pub trait Advance: Position {
-    /// Returns the direction of the object, measured in radians
-    ///
-    /// Note: 0.0 points to the right and a positive number means a clockwise
-    /// rotation
-    fn direction(&self) -> f64;
-
-    /// Returns a mutable reference to the direction of the object
-    fn direction_mut(&mut self) -> &mut f64;
-
-    /// Changes the direction of the vector to point to the given target
-    fn point_to(&mut self, target: Point) {
-        let m = (self.y() - target.y) / (self.x() - target.x);
-
-        *self.direction_mut() = if target.x > self.x() {
-            m.atan()
-        } else {
-            m.atan() + f64::consts::PI
-        };
-    }
-
-    /// Advances the object in the given amount of units, according to its direction
-    fn advance(&mut self, units: f64) {
-        *self.x_mut() += self.direction().cos() * units;
-        *self.y_mut() += self.direction().sin() * units;
-    }
-
-    /// Similar to `Advance::advance`, but the final position will be wrapped
-    /// around the given bounds
-    fn advance_wrapping(&mut self, units: f64, bounds: Size) {
-        self.advance(units);
-
-        fn wrap(k: &mut f64, bound: f64) {
-            if *k < 0.0 {
-                *k += bound;
-            } else if *k >= bound {
-                *k -= bound;
-            }
-        }
-
-        wrap(self.x_mut(), bounds.width);
-        wrap(self.y_mut(), bounds.height);
     }
 }
 

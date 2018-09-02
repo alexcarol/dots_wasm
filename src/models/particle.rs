@@ -1,5 +1,4 @@
 use super::Vector;
-use geometry::Advance;
 
 /// A model representing a particle
 ///

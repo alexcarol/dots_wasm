@@ -1,7 +1,3 @@
-use rand::Rng;
-
-use super::Size;
-
 use std::ops::{Add, Sub, Mul, Div};
 
 /// A `Point` represents a position in space
@@ -15,14 +11,6 @@ impl Point {
     /// Returns a new `Point` with the given coordinates
     pub fn new(x: f64, y: f64) -> Point {
         Point { x: x, y: y }
-    }
-
-    /// Returns a random `Point` within the given bounds (exclusive)
-    pub fn random<R: Rng>(rng: &mut R, bounds: Size) -> Point {
-        Point {
-            x: rng.gen_range(0.0, bounds.width),
-            y: rng.gen_range(0.0, bounds.height)
-        }
     }
 
     /// Returns the squared distance from this point to the given one
