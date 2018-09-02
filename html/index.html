@@ -147,26 +147,30 @@
 
     canvas.addEventListener('mousedown', (event) => {
       var rect = canvas.getBoundingClientRect();
-      var x = event.pageX - rect.left;
-      var y = event.pageY - rect.top;
+      var x = (event.pageX - rect.left) * 0.8;
+      var y = (event.pageY - rect.top) * 0.8;
       console.log('mousedown', event);
       module.handle_mousedown(x, y);
     });
 
     canvas.addEventListener('mousemove', (event) =>  {
       var rect = canvas.getBoundingClientRect();
-      var x = event.pageX- rect.left;
-      var y = event.pageY - rect.top;
+      var x = (event.pageX - rect.left) * 0.8;
+      var y = (event.pageY - rect.top) * 0.8;
 
       module.handle_mousemove(x, y);
     });
 
-    canvas.addEventListener('mouseup', (event) => {
+
+    const mouseUp = (event) => {
       var rect = canvas.getBoundingClientRect();
-      var x = event.pageX - rect.left;
-      var y = event.pageY - rect.top;
+      var x = (event.pageX - rect.left) * 0.8;
+      var y = (event.pageY - rect.top) * 0.8;
       module.handle_mouseup(x, y);
-    });
+    }
+    canvas.addEventListener('mouseup', mouseUp);
+    canvas.addEventListener('mouseout', mouseUp);
+    canvas.addEventListener('mouseleave', mouseUp);
 
 
 
