@@ -1,5 +1,4 @@
 use game_state::GameState;
-use util;
 
 const SCORE_PER_ENEMY: u32 = 10;
 

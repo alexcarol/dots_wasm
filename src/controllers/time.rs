@@ -4,7 +4,7 @@ use rand::Rng;
 use super::Actions;
 use game_state::GameState;
 use geometry::{Advance, Position, Point};
-use models::{Enemy, Particle, Vector};
+use models::{Enemy, Particle, Vector, Mouse};
 use util;
 
 // Constants related to time
@@ -58,9 +58,16 @@ impl<T: Rng> TimeController<T> {
         util::fast_retain(&mut state.world.particles, |p| p.ttl > 0.0);
 
         if actions.click != (0, 0) {
-            state.current_line_active = true;
-            state.current_line.a.x = actions.click.0;
-            state.current_line.a.y = actions.click.1;
+            let mouse = Mouse::new(actions.click.0, actions.click.1);
+
+            for enemy in state.world.enemies {
+                if enemy.collides_with(mouse) {
+                    state.current_line_active = true;
+                    state.current_line.a.x = actions.click.0;
+                    state.current_line.a.y = actions.click.1;
+                }
+            }
+
         }
 
         if state.current_line_active && actions.mouse_position != (0, 0) {
@@ -73,6 +80,7 @@ impl<T: Rng> TimeController<T> {
 
             state.lines.push(state.current_line);
         }
+
 
        /* might be useful to detect where the mouse is
         // Spawn enemies at random locations
