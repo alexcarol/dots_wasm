@@ -27,6 +27,10 @@ impl Dot {
         self.used = true;
     }
 
+    pub fn is_used(&self) -> bool {
+        self.used
+    }
+
     pub fn collides_with(&self, mouse: &Mouse) -> bool {
         self.point.intersect_circle(&mouse.point, 10.0)
     }
