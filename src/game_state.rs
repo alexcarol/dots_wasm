@@ -55,7 +55,7 @@ impl GameState {
 
         let mouse = Mouse::new(self.current_line.b.point.x, self.current_line.b.point.y);
 
-        self.world.on_mouse_up(&self.current_line.a, &mouse);
+        self.world.on_mouse_up(self.current_line.a, &mouse);
 
     }
 
