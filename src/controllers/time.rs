@@ -2,8 +2,8 @@ use std::f64;
 
 use super::Actions;
 use game_state::GameState;
-use geometry::{Collide};
 use models::{Mouse};
+use models::Dot;
 
 /// Timers to handle creation of bullets, enemies and particles
 pub struct TimeController {
@@ -23,14 +23,14 @@ impl TimeController {
     pub fn update_seconds(&mut self, dt: f64, actions: &Actions, state: &mut GameState) {
         self.current_time += dt;
 
-        if actions.click != (0, 0) {
+        if actions.click != (0.0, 0.0) {
             let mouse = Mouse::new(actions.click.0, actions.click.1);
 
             for row in &state.world.dots {
                 for dot in row {
-                    if dot.collides_with(mouse) {
+                    if dot.collides_with(&mouse) {
                         state.current_line_active = true;
-                        state.current_line.a = dot;
+                        state.current_line.a = *dot;
 
                         break;
                     }
@@ -39,26 +39,15 @@ impl TimeController {
 
         }
 
-        if state.current_line_active && actions.mouse_position != (0, 0) {
-            state.current_line.b.x = actions.mouse_position.0;
-            state.current_line.b.y = actions.mouse_position.1;
+        if state.current_line_active && actions.mouse_position != (0.0, 0.0) {
+            state.current_line.b = Dot::new(actions.mouse_position.0, actions.mouse_position.1, 0, 0);
         }
 
         if actions.mouseup {
-            state.current_line_active = false;
-
-            let mouse = Mouse::new(state.current_line.b.x, state.current_line.b.y);
-
-            for enemy in &state.world.enemies {
-                if enemy.collides_with(&mouse) {
-                    state.current_line.b.x = enemy.position().x as i32;
-                    state.current_line.b.y =  enemy.position().y as i32;
-                    state.lines.push(state.current_line);
-
-                    break;
-                }
-            }
+            state.on_mouse_up();
         }
+
+
 
 
        /* might be useful to detect where the mouse is

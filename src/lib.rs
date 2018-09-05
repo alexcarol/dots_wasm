@@ -15,17 +15,17 @@ use self::geometry::Size;
 use self::controllers::{Actions, TimeController};
 
 lazy_static! {
-    static ref DATA: Mutex<GameData<'a>> = Mutex::new(new_game_data(1024.0, 600.0));
+    static ref DATA: Mutex<GameData> = Mutex::new(new_game_data(1024.0, 600.0));
 }
 
-struct GameData<'a> {
-    state: GameState<'a>,
+struct GameData {
+    state: GameState,
     actions: Actions,
     time_controller: TimeController,
 }
 
-fn new_game_data<'a>(width: f64, height: f64) -> &'static GameData<'a> {
-    &GameData {
+fn new_game_data(width: f64, height: f64) -> GameData {
+    GameData {
         state: GameState::new(Size::new(width, height)),
         actions: Actions::default(),
         time_controller: TimeController::new(),
@@ -38,7 +38,7 @@ extern "C" {
     fn draw_enemy(_: c_double, _: c_double);
     fn draw_particle(_: c_double, _: c_double, _: c_double);
     fn draw_score(_: c_double);
-    fn draw_line(_: c_int, _: c_int, _: c_int, _: c_int);
+    fn draw_line(_: c_double, _: c_double, _: c_double, _: c_double);
     fn rust_log(_: c_int);
 }
 
@@ -49,29 +49,26 @@ pub extern "C" fn resize(width: c_double, height: c_double) {
 
 #[no_mangle]
 pub unsafe extern "C" fn draw() {
-    use geometry::{ Position};
     let data = &mut DATA.lock().unwrap();
-    let world = &data.state.world;
 
     clear_screen();
-    for particle in &world.particles {
-        draw_particle(particle.x(), particle.y(), 5.0 * particle.ttl);
-    }
-
-    for enemy in &world.enemies {
-        draw_enemy(enemy.x(), enemy.y());
-    }
 
     draw_score(data.state.score as f64);
 
     if data.state.current_line_active {
         let a = &data.state.current_line.a;
         let b = &data.state.current_line.b;
-        draw_line(a.x, a.y, b.x, b.y);
+        draw_line(a.point.x, a.point.y, b.point.x, b.point.y);
     }
 
-    for line in &data.state.lines {
-        draw_line(line.a.x, line.a.y, line.b.x, line.b.y);
+    for row in &data.state.world.dots {
+        for dot in row {
+            draw_enemy(dot.point.x, dot.point.y);
+        }
+    }
+
+    for line in &data.state.world.lines {
+        draw_line(line.a.point.x, line.a.point.y, line.b.point.x, line.b.point.y);
     }
 /*
     if data.actions.click != (0, 0) {
@@ -90,7 +87,7 @@ pub extern "C" fn update(time: c_double) {
     let data: &mut GameData = &mut DATA.lock().unwrap();
     data.time_controller.update_seconds(time, &data.actions, &mut data.state);
     data.actions.mouseup = false;
-    data.actions.click = (0, 0);
+    data.actions.click = (0.0, 0.0);
 }
 
 fn int_to_bool(i: c_int) -> bool {
@@ -122,19 +119,19 @@ pub extern "C" fn toggle_turn_right(b: c_int) {
 }
 
 #[no_mangle]
-pub extern "C" fn handle_mousedown(x: c_int, y: c_int) {
+pub extern "C" fn handle_mousedown(x: c_double, y: c_double) {
     let data = &mut DATA.lock().unwrap();
-    data.actions.click = (x as i32, y as i32);
+    data.actions.click = (x, y);
 }
 
 #[no_mangle]
-pub extern "C" fn handle_mousemove(x: c_int, y: c_int) {
+pub extern "C" fn handle_mousemove(x: c_double, y: c_double) {
     let data = &mut DATA.lock().unwrap();
-    data.actions.mouse_position = (x as i32, y as i32);
+    data.actions.mouse_position = (x, y);
 }
 
 #[no_mangle]
-pub extern "C" fn handle_mouseup(x: c_int, y: c_int) {
+pub extern "C" fn handle_mouseup() {
     let data = &mut DATA.lock().unwrap();
     data.actions.mouseup = true
 }

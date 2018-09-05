@@ -3,20 +3,20 @@ use geometry::{Collide};
 use geometry::Position;
 
 pub struct Mouse {
-    point: Point,
+    pub point: Point,
 }
 
 impl Mouse{
     /// Create a enemy with the given vector
-    pub fn new(x: i32, y: i32) -> Mouse {
+    pub fn new(x: f64, y: f64) -> Mouse {
         Mouse {
-            point: Point { x: x as f64, y: y as f64 }
+            point: Point::new(x, y)
         }
     }
 }
 
 impl Collide for Mouse {
-    fn radius(&self) -> f64 { 1.0 }
+    fn radius(&self) -> f64 { 10.0 }
 }
 
 impl Position for Mouse {
