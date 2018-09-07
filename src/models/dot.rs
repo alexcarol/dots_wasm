@@ -1,12 +1,13 @@
 use geometry::Point;
 use models::Mouse;
+use std::hash::Hash;
+use std::hash::Hasher;
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq)]
 pub struct Dot {
     pub point: Point,
     pub i: usize,
     pub j: usize,
-    used: bool,
 }
 
 impl Dot {
@@ -19,19 +20,18 @@ impl Dot {
             },
             i: i,
             j: j,
-            used: false,
         }
-    }
-
-    pub fn mark_used(&mut self) {
-        self.used = true;
-    }
-
-    pub fn is_used(&self) -> bool {
-        self.used
     }
 
     pub fn collides_with(&self, mouse: &Mouse) -> bool {
         self.point.intersect_circle(&mouse.point, 10.0)
+    }
+}
+
+impl Hash for Dot {
+    fn hash<H: Hasher>(&self, state: &'_ mut H) {
+        // TODO this assumes i and j will always be consistent
+        self.i.hash(state);
+        self.j.hash(state);
     }
 }

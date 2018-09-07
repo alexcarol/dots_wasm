@@ -28,7 +28,7 @@ impl TimeController {
 
             for row in &state.world.dots {
                 for dot in row {
-                    if !dot.is_used() && dot.collides_with(&mouse) {
+                    if dot.collides_with(&mouse) {
                         state.current_line_active = true;
                         state.current_line.a = *dot;
 

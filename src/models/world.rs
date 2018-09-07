@@ -2,12 +2,13 @@ use geometry::Size;
 use models::Dot;
 use models::Mouse;
 use game_state::Line;
+use std::collections::HashSet;
 
 /// A model that contains the other models and renders them
 pub struct World {
     pub dots: Vec<Vec<Dot>>,
     pub size: Size,
-    pub lines: Vec<Line>,
+    pub lines: HashSet<Line>,
 }
 
 impl World {
@@ -15,7 +16,7 @@ impl World {
     pub fn new(size: Size) -> World {
         World {
             dots: World::dots(),
-            lines: vec![],
+            lines: HashSet::new(),
             size: size,
         }
     }
@@ -35,8 +36,10 @@ impl World {
         if !collision.is_some() {
             return;
         }
+        let end_dot = *collision.unwrap();
 
-        self.lines.push(Line::new(start_dot, *collision.unwrap()))
+
+        self.lines.insert(Line::new(start_dot, end_dot));
     }
 
     pub fn dots() -> Vec<Vec<Dot>> {

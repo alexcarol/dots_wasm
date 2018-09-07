@@ -2,6 +2,8 @@ use geometry::{Size};
 use models::World;
 use models::Dot;
 use models::Mouse;
+use std::hash::Hash;
+use std::hash::Hasher;
 
 
 #[derive(Copy, Clone)]
@@ -21,6 +23,27 @@ impl Line {
         Line {
             a,
             b,
+        }
+    }
+}
+impl PartialEq for Line {
+    fn eq(&self, other: &'_ Line) -> bool {
+        self.a == other.a && self.b == other.b
+            || self.a == other.a && self.b == other.b
+    }
+}
+impl Eq for Line {
+
+}
+
+impl Hash for Line {
+    fn hash<H: Hasher>(&self, state: &'_ mut H) {
+        if self.a.i > self.b.i || self.a.i == self.b.i && self.a.j > self.b.j {
+            self.a.hash(state);
+            self.b.hash(state);
+        } else {
+            self.b.hash(state);
+            self.a.hash(state);
         }
     }
 }

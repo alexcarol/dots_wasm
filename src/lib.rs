@@ -67,7 +67,7 @@ pub unsafe extern "C" fn draw() {
         }
     }
 
-    for line in &data.state.world.lines {
+    for line in data.state.world.lines.iter() {
         draw_line(line.a.point.x, line.a.point.y, line.b.point.x, line.b.point.y);
     }
 /*
