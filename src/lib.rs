@@ -37,7 +37,7 @@ extern "C" {
     fn clear_screen();
     fn draw_enemy(_: c_double, _: c_double);
     fn draw_particle(_: c_double, _: c_double, _: c_double);
-    fn draw_score(_: c_double);
+    fn draw_score(_: c_int, _: c_int);
     fn draw_line_a(_: c_double, _: c_double, _: c_double, _: c_double);
     fn draw_line_b(_: c_double, _: c_double, _: c_double, _: c_double);
     fn rust_log(_: c_int);
@@ -54,13 +54,13 @@ pub unsafe extern "C" fn draw() {
 
     clear_screen();
 
-    draw_score(data.state.score as f64);
+    draw_score(data.state.world.score_a as i32, data.state.world.score_b as i32);
 
     if data.state.current_line_active {
-        let a = &data.state.current_line.a;
-        let b = &data.state.current_line.b;
+        let a = &data.state.start_dot;
+        let b = &data.state.mouse;
 
-        if data.state.world.active_player.isA() {
+        if data.state.world.active_player.is_a() {
             draw_line_a(a.point.x, a.point.y, b.point.x, b.point.y);
         } else {
             draw_line_b(a.point.x, a.point.y, b.point.x, b.point.y);

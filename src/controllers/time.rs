@@ -3,7 +3,6 @@ use std::f64;
 use super::Actions;
 use game_state::GameState;
 use models::{Mouse};
-use models::Dot;
 
 /// Timers to handle creation of bullets, enemies and particles
 pub struct TimeController {
@@ -30,7 +29,7 @@ impl TimeController {
                 for dot in row {
                     if dot.collides_with(&mouse) {
                         state.current_line_active = true;
-                        state.current_line.a = *dot;
+                        state.start_dot = *dot;
 
                         break;
                     }
@@ -40,7 +39,7 @@ impl TimeController {
         }
 
         if state.current_line_active && actions.mouse_position != (0.0, 0.0) {
-            state.current_line.b = Dot::new(actions.mouse_position.0, actions.mouse_position.1, 0, 0);
+            state.mouse = Mouse::new(actions.mouse_position.0, actions.mouse_position.1);
         }
 
         if actions.mouseup {

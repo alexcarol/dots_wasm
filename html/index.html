@@ -119,11 +119,11 @@
       console.log("rust-log", x);
     }
 
-    function draw_score(x) {
+    function draw_score(a, b) {
       ctx.fillStyle = "orange";
       ctx.textBaseline = "top";
       ctx.font = "20px sans-serif";
-      ctx.fillText('Score: ' + x, 10, 10)
+      ctx.fillText('Score a: ' + a + ' Score b: ' + b, 10, 10)
     }
 
     // The real loading and running of our wasm starts here

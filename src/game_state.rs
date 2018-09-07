@@ -2,9 +2,6 @@ use geometry::{Size};
 use models::World;
 use models::Dot;
 use models::Mouse;
-use std::hash::Hash;
-use std::hash::Hasher;
-
 
 #[derive(Copy, Clone)]
 pub struct PixelPoint {
@@ -12,51 +9,15 @@ pub struct PixelPoint {
     pub y: i32,
 }
 
-#[derive(Copy, Clone)]
-pub struct Line {
-    pub a: Dot,
-    pub b: Dot,
-}
-
-impl Line {
-    pub fn new(a: Dot, b: Dot) -> Line {
-        Line {
-            a,
-            b,
-        }
-    }
-}
-impl PartialEq for Line {
-    fn eq(&self, other: &'_ Line) -> bool {
-        self.a == other.a && self.b == other.b
-            || self.a == other.a && self.b == other.b
-    }
-}
-impl Eq for Line {
-
-}
-
-impl Hash for Line {
-    fn hash<H: Hasher>(&self, state: &'_ mut H) {
-        if self.a.i > self.b.i || self.a.i == self.b.i && self.a.j > self.b.j {
-            self.a.hash(state);
-            self.b.hash(state);
-        } else {
-            self.b.hash(state);
-            self.a.hash(state);
-        }
-    }
-}
 
 /// The data structure that contains the state of the game
 pub struct GameState {
     /// The world contains everything that needs to be drawn
     pub world: World,
-    /// The current score of the player
-    pub score: u32,
 
     pub current_line_active: bool,
-    pub current_line: Line,
+    pub start_dot: Dot,
+    pub mouse: Mouse,
 }
 
 impl GameState {
@@ -64,21 +25,16 @@ impl GameState {
     pub fn new(size: Size) -> GameState {
         GameState {
             world: World::new(size),
-            score: 0,
             current_line_active: false,
-            current_line: Line {
-                a: Dot::new(0.0, 0.0, 0, 0),
-                b: Dot::new(0.0, 0.0, 0, 0),
-            },
+            start_dot: Dot::new(0, 0),
+            mouse: Mouse::new(0.0, 0.0),
         }
     }
 
     pub fn on_mouse_up(&mut self) {
         self.current_line_active = false;
 
-        let mouse = Mouse::new(self.current_line.b.point.x, self.current_line.b.point.y);
-
-        self.world.on_mouse_up(self.current_line.a, &mouse);
+        self.world.on_mouse_up(self.start_dot, &self.mouse);
 
     }
 

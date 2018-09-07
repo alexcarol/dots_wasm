@@ -1,7 +1,7 @@
 use std::ops::{Add, Sub, Mul, Div};
 
 /// A `Point` represents a position in space
-#[derive(Clone, Default, Copy)]
+#[derive(Clone, Default, Copy, Debug)]
 pub struct Point {
     pub x: f64,
     pub y: f64

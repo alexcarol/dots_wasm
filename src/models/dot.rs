@@ -3,7 +3,7 @@ use models::Mouse;
 use std::hash::Hash;
 use std::hash::Hasher;
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub struct Dot {
     pub point: Point,
     pub i: usize,
@@ -11,12 +11,12 @@ pub struct Dot {
 }
 
 impl Dot {
-    pub fn new(x: f64, y: f64, i: usize, j: usize) -> Dot
+    pub fn new(i: usize, j: usize) -> Dot
     {
         Dot {
             point: Point {
-                x: x as f64,
-                y: y as f64,
+                x: ((i + 1) * 100) as f64,
+                y: ((j + 1) * 100) as f64,
             },
             i: i,
             j: j,
