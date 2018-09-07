@@ -38,8 +38,9 @@ impl World {
         }
         let end_dot = *collision.unwrap();
 
-
-        self.lines.insert(Line::new(start_dot, end_dot));
+        if start_dot.is_contiguous(end_dot) {
+            self.lines.insert(Line::new(start_dot, end_dot));
+        }
     }
 
     pub fn dots() -> Vec<Vec<Dot>> {

@@ -26,6 +26,16 @@ impl Dot {
     pub fn collides_with(&self, mouse: &Mouse) -> bool {
         self.point.intersect_circle(&mouse.point, 10.0)
     }
+
+    pub fn is_contiguous(&self, other: Dot) -> bool {
+        if self.i == other.i {
+            self.j + 1 == other.j || self.j == other.j + 1
+        } else if self.j == other.j {
+            self.i + 1 ==  other.i || self.i == other.i + 1
+        } else {
+            false
+        }
+    }
 }
 
 impl Hash for Dot {
