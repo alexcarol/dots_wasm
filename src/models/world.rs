@@ -4,11 +4,25 @@ use models::Mouse;
 use game_state::Line;
 use std::collections::HashSet;
 
+#[derive(PartialEq)]
+pub enum ActivePlayer {
+    A,
+    B,
+}
+
+impl ActivePlayer {
+    pub fn isA(&self) -> bool {
+        *self == ActivePlayer::A
+    }
+}
+
 /// A model that contains the other models and renders them
 pub struct World {
     pub dots: Vec<Vec<Dot>>,
     pub size: Size,
-    pub lines: HashSet<Line>,
+    pub lines_a: HashSet<Line>,
+    pub lines_b: HashSet<Line>,
+    pub active_player: ActivePlayer,
 }
 
 impl World {
@@ -16,7 +30,9 @@ impl World {
     pub fn new(size: Size) -> World {
         World {
             dots: World::dots(),
-            lines: HashSet::new(),
+            lines_a: HashSet::new(),
+            lines_b: HashSet::new(),
+            active_player: ActivePlayer::A,
             size: size,
         }
     }
@@ -39,7 +55,17 @@ impl World {
         let end_dot = *collision.unwrap();
 
         if start_dot.is_contiguous(end_dot) {
-            self.lines.insert(Line::new(start_dot, end_dot));
+            let line = Line::new(start_dot, end_dot);
+
+            if self.active_player == ActivePlayer::A {
+                if !self.lines_b.contains(&line) && self.lines_a.insert(line) {
+                    self.active_player = ActivePlayer::B;
+                }
+            } else {
+                if !self.lines_a.contains(&line) && self.lines_b.insert(line) {
+                    self.active_player = ActivePlayer::A;
+                }
+            }
         }
     }
 

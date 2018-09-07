@@ -38,7 +38,8 @@ extern "C" {
     fn draw_enemy(_: c_double, _: c_double);
     fn draw_particle(_: c_double, _: c_double, _: c_double);
     fn draw_score(_: c_double);
-    fn draw_line(_: c_double, _: c_double, _: c_double, _: c_double);
+    fn draw_line_a(_: c_double, _: c_double, _: c_double, _: c_double);
+    fn draw_line_b(_: c_double, _: c_double, _: c_double, _: c_double);
     fn rust_log(_: c_int);
 }
 
@@ -58,7 +59,12 @@ pub unsafe extern "C" fn draw() {
     if data.state.current_line_active {
         let a = &data.state.current_line.a;
         let b = &data.state.current_line.b;
-        draw_line(a.point.x, a.point.y, b.point.x, b.point.y);
+
+        if data.state.world.active_player.isA() {
+            draw_line_a(a.point.x, a.point.y, b.point.x, b.point.y);
+        } else {
+            draw_line_b(a.point.x, a.point.y, b.point.x, b.point.y);
+        }
     }
 
     for row in &data.state.world.dots {
@@ -67,8 +73,12 @@ pub unsafe extern "C" fn draw() {
         }
     }
 
-    for line in data.state.world.lines.iter() {
-        draw_line(line.a.point.x, line.a.point.y, line.b.point.x, line.b.point.y);
+    for line in data.state.world.lines_a.iter() {
+        draw_line_a(line.a.point.x, line.a.point.y, line.b.point.x, line.b.point.y);
+    }
+
+    for line in data.state.world.lines_b.iter() {
+        draw_line_b(line.a.point.x, line.a.point.y, line.b.point.x, line.b.point.y);
     }
 /*
     if data.actions.click != (0, 0) {

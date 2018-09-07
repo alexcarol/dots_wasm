@@ -98,15 +98,23 @@
       ctx.drawImage(res.particle, x - radius, y - radius, 2 * radius, 2 * radius);
     }
 
-    function draw_line(ax, ay, bx, by) {
-      console.log('draw_line called:', ax, ay, bx, by);
+    function draw_line(color, ax, ay, bx, by) {
       ctx.beginPath();
       ctx.moveTo(ax, ay);
-      ctx.strokeStyle = 'orange';
+      ctx.strokeStyle = color;
       ctx.lineWidth = 15;
       ctx.lineTo(bx, by);
       ctx.stroke();
     }
+
+    function draw_line_a(ax, ay, bx, by) {
+       draw_line('orange', ax, ay, bx, by);
+    }
+
+    function draw_line_b(ax, ay, bx, by) {
+       draw_line('blue', ax, ay, bx, by);
+    }
+
     function rust_log(x) {
       console.log("rust-log", x);
     }
@@ -119,7 +127,7 @@
     }
 
     // The real loading and running of our wasm starts here
-    let imports = { clear_screen, draw_player, draw_enemy, draw_bullet, draw_particle, draw_score, draw_line, rust_log };
+    let imports = { clear_screen, draw_player, draw_enemy, draw_bullet, draw_particle, draw_score, draw_line_a, draw_line_b, rust_log };
     imports.Math_atan = Math.atan;
     imports.sin = Math.sin;
     imports.cos = Math.cos;
