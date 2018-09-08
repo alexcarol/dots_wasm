@@ -66,17 +66,18 @@ impl World {
 
                     if self.scored(line) {
                         self.score_a += 1;
+                    } else {
+                        self.active_player = ActivePlayer::B;
                     }
 
-
-                    self.active_player = ActivePlayer::B;
                 }
             } else {
                 if !self.lines_a.contains(&line) && self.lines_b.insert(line) {
                     if self.scored(line) {
                         self.score_b += 1;
+                    } else {
+                        self.active_player = ActivePlayer::A;
                     }
-                    self.active_player = ActivePlayer::A;
                 }
             }
         }
