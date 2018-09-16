@@ -122,7 +122,7 @@ impl World {
         ]
     }
 
-    pub fn dots(size: Size) -> Vec<Vec<Dot>> {
+    pub fn dots(_size: Size) -> Vec<Vec<Dot>> {
         let mut rows = vec![];
         for i in 0..3 {
             let mut row = vec![];
